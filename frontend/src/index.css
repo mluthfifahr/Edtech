@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+  --font-quicksand: 'Quicksand', sans-serif;
+  --font-sans: 'Quicksand', sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+}
