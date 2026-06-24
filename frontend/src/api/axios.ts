@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Konfigurasi dasar untuk axios
 export const api = axios.create({
-  baseURL: 'http://localhost:8000/api', // Sesuaikan dengan URL Laravel backend Anda nanti
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api', // Gunakan .env atau fallback ke localhost
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
