@@ -3,7 +3,7 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { api } from '../../api/axios';
 import { useStudentStore } from '../../store/useStudentStore';
 import { motion } from 'framer-motion';
-import { Trophy, Clock, Zap, ArrowRight, CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 
 const STORAGE_URL = import.meta.env.VITE_API_URL 
   ? import.meta.env.VITE_API_URL.replace('/api', '/storage') 
