@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { api } from '../../api/axios';
-import { Plus, Trash2, Image as ImageIcon, CheckCircle, X, ArrowLeft, List } from 'lucide-react';
+import { Plus, Trash2, Image as ImageIcon, CheckCircle, X, ArrowLeft, List, Edit2 } from 'lucide-react';
 
 interface Subject {
   id: number;
@@ -34,6 +34,7 @@ export default function Questions() {
   const [loading, setLoading] = useState(true);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form State
@@ -69,17 +70,37 @@ export default function Questions() {
     fetchData();
   }, [selectedSubjectFilter]);
 
-  const openModal = () => {
-    // Set default form type sesuai dengan mode yang sedang dibuka
-    setType(selectedType || 'quiz');
-    setQuestionText('');
-    setImageFile(null);
-    setChoices([
-      { choice_text: '', is_correct: true },
-      { choice_text: '', is_correct: false },
-      { choice_text: '', is_correct: false },
-      { choice_text: '', is_correct: false },
-    ]);
+  const openModal = (question: Question | null = null) => {
+    setEditingQuestion(question);
+    if (question) {
+      setType(question.type);
+      setSubjectId(String(question.subject_id));
+      setQuestionText(question.question_text || '');
+      setImageFile(null);
+      
+      if (question.choices && question.choices.length > 0) {
+        setChoices(question.choices);
+      } else {
+        setChoices([
+          { choice_text: '', is_correct: true },
+          { choice_text: '', is_correct: false },
+          { choice_text: '', is_correct: false },
+          { choice_text: '', is_correct: false },
+        ]);
+      }
+    } else {
+      // Set default form type sesuai dengan mode yang sedang dibuka
+      setType(selectedType || 'quiz');
+      setSubjectId('');
+      setQuestionText('');
+      setImageFile(null);
+      setChoices([
+        { choice_text: '', is_correct: true },
+        { choice_text: '', is_correct: false },
+        { choice_text: '', is_correct: false },
+        { choice_text: '', is_correct: false },
+      ]);
+    }
     if (fileInputRef.current) fileInputRef.current.value = '';
     setIsModalOpen(true);
   };
@@ -113,7 +134,12 @@ export default function Questions() {
     });
 
     try {
-      await api.post('/admin/questions', formData);
+      if (editingQuestion) {
+        formData.append('_method', 'PUT');
+        await api.post(`/admin/questions/${editingQuestion.id}`, formData);
+      } else {
+        await api.post('/admin/questions', formData);
+      }
       closeModal();
       fetchData();
     } catch (err) {
@@ -136,7 +162,7 @@ export default function Questions() {
         <button onClick={closeModal} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
           <X className="w-5 h-5" />
         </button>
-        <h3 className="text-xl font-bold text-gray-900 mb-6">Buat Soal Baru</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-6">{editingQuestion ? 'Edit Soal' : 'Buat Soal Baru'}</h3>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
@@ -165,19 +191,19 @@ export default function Questions() {
             </div>
           </div>
 
-          {type === 'quiz' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pertanyaan</label>
-              <textarea
-                required
-                value={questionText}
-                onChange={(e) => setQuestionText(e.target.value)}
-                className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 resize-none outline-none"
-                rows={3}
-                placeholder="Tuliskan pertanyaan kuis di sini..."
-              />
-            </div>
-          )}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Pertanyaan {type === 'tebak_gambar' && '(Opsional)'}
+            </label>
+            <textarea
+              required={type === 'quiz'}
+              value={questionText}
+              onChange={(e) => setQuestionText(e.target.value)}
+              className="block w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 resize-none outline-none"
+              rows={3}
+              placeholder={type === 'tebak_gambar' ? "Biarkan kosong jika ingin pakai default..." : "Tuliskan pertanyaan kuis di sini..."}
+            />
+          </div>
 
           {type === 'tebak_gambar' && (
             <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center bg-gray-50/50 hover:bg-gray-50 transition-colors">
@@ -185,7 +211,7 @@ export default function Questions() {
               <label className="block text-sm font-medium text-gray-700 mb-2 text-center">Upload Gambar Ilustrasi</label>
               <input
                 type="file"
-                required
+                required={!editingQuestion && type === 'tebak_gambar'}
                 accept="image/*"
                 ref={fileInputRef}
                 onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)}
@@ -241,7 +267,7 @@ export default function Questions() {
             <h2 className="text-2xl font-bold text-gray-900">Bank Soal</h2>
             <p className="mt-1 text-sm text-gray-500">Pilih tipe soal yang ingin Anda kelola.</p>
           </div>
-          <button onClick={openModal} className="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 shadow-sm">
+          <button onClick={() => openModal(null)} className="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700 shadow-sm">
             <Plus className="w-5 h-5 mr-2" /> Buat Soal
           </button>
         </div>
@@ -298,7 +324,7 @@ export default function Questions() {
             </h2>
           </div>
         </div>
-        <button onClick={openModal} className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-indigo-700 shadow-sm text-sm">
+        <button onClick={() => openModal(null)} className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-indigo-700 shadow-sm text-sm">
           <Plus className="w-4 h-4 mr-2" /> Buat Soal
         </button>
       </div>
@@ -331,9 +357,14 @@ export default function Questions() {
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                     {q.subject?.name}
                   </span>
-                  <button onClick={() => handleDelete(q.id)} className="text-red-400 hover:text-red-600 hover:bg-red-50 p-1 rounded transition-colors">
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex gap-1">
+                    <button onClick={() => openModal(q)} className="text-blue-400 hover:text-blue-600 hover:bg-blue-50 p-1 rounded transition-colors">
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete(q.id)} className="text-red-400 hover:text-red-600 hover:bg-red-50 p-1 rounded transition-colors">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
                 <h4 className="text-sm font-bold text-gray-800 mb-3 line-clamp-2 leading-snug">
                   {q.question_text || 'Tebak Gambar Ini!'}
@@ -355,7 +386,7 @@ export default function Questions() {
           {filteredQuestions.length === 0 && (
             <div className="col-span-full text-center py-12 bg-white rounded-xl border border-gray-200 border-dashed">
               <p className="text-gray-400 text-sm mb-2">Belum ada soal untuk mode ini.</p>
-              <button onClick={openModal} className="text-indigo-600 font-medium text-sm hover:underline">Tambahkan sekarang</button>
+              <button onClick={() => openModal()} className="text-purple-600 font-medium text-sm hover:underline">Tambahkan sekarang</button>
             </div>
           )}
         </div>
