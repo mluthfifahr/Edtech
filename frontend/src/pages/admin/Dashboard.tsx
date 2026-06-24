@@ -57,7 +57,7 @@ export default function Dashboard() {
           <div className="flex-1 flex items-center justify-center relative z-10 text-gray-500 font-medium">Belum ada data nilai</div>
         ) : (
           <div className="flex-1 flex items-end gap-3 justify-around relative z-10 pt-10">
-            {statsData.recent_scores.slice().reverse().map((item: any, i: number) => {
+            {statsData.recent_scores.slice().reverse().map((item: any) => {
               // Calculate height relative to max score in the array, or minimum 10% so it's visible
               const maxScore = Math.max(...statsData.recent_scores.map((s:any) => s.score), 10);
               const heightPercent = Math.max((item.score / maxScore) * 100, 10);
