@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { api } from '../../api/axios';
 import { Plus, Trash2, Image as ImageIcon, CheckCircle, X, ArrowLeft, List, Edit2 } from 'lucide-react';
 
+const STORAGE_URL = import.meta.env.VITE_API_URL 
+  ? import.meta.env.VITE_API_URL.replace('/api', '/storage') 
+  : 'http://localhost:8000/storage';
+
 interface Subject {
   id: number;
   name: string;
@@ -349,7 +353,7 @@ export default function Questions() {
             <div key={q.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
               {q.image_path && (
                 <div className="h-32 bg-gray-100 relative">
-                  <img src={`http://127.0.0.1:8000/storage/${q.image_path}`} alt="Soal" className="w-full h-full object-cover" />
+                  <img src={`${STORAGE_URL}/${q.image_path}`} alt="Soal" className="w-full h-full object-cover" />
                 </div>
               )}
               <div className="p-4 flex-grow flex flex-col">

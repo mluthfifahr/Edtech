@@ -3,7 +3,11 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { api } from '../../api/axios';
 import { useStudentStore } from '../../store/useStudentStore';
 import { motion } from 'framer-motion';
-import { XCircle, CheckCircle } from 'lucide-react';
+import { Trophy, Clock, Zap, ArrowRight, CheckCircle, XCircle } from 'lucide-react';
+
+const STORAGE_URL = import.meta.env.VITE_API_URL 
+  ? import.meta.env.VITE_API_URL.replace('/api', '/storage') 
+  : 'http://localhost:8000/storage';
 
 export default function Play() {
   const { subjectId } = useParams();
@@ -133,7 +137,7 @@ export default function Play() {
         <div className="absolute top-0 left-0 w-full h-6 bg-gradient-to-r from-sky-300 via-blue-300 to-sky-300 opacity-80"></div>
         {type === 'tebak_gambar' && currentQ.image_path && (
           <img 
-            src={`http://127.0.0.1:8000/storage/${currentQ.image_path}`} 
+            src={`${STORAGE_URL}/${currentQ.image_path}`} 
             alt="Tebak Gambar" 
             className="max-h-72 mx-auto rounded-xl object-contain mb-6 shadow-sm border-2 border-gray-100"
           />
