@@ -30,7 +30,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {stats.map((stat, i) => {
+        {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <div key={stat.name} className={`bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white p-6 flex items-center hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group`}>

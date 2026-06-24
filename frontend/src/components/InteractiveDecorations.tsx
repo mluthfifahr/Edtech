@@ -1,4 +1,4 @@
-import { Star, Sparkles, Rocket, Compass, Music, Cloud, Sun, Trophy, Gamepad2, Smile, Zap } from 'lucide-react';
+import { Star, Sparkles, Rocket, Compass, Music, Cloud, Sun, Trophy, Gamepad2, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function InteractiveDecorations() {

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { api } from '../api/axios';
+
 
 interface Choice {
   id: string | number;
@@ -26,14 +26,14 @@ interface QuizState {
   resetQuiz: () => void;
 }
 
-export const useQuizStore = create<QuizState>((set, get) => ({
+export const useQuizStore = create<QuizState>((set) => ({
   questions: [],
   currentQuestionIndex: 0,
   score: 0,
   isLoading: false,
   error: null,
 
-  fetchQuestions: async (moduleId: number) => {
+  fetchQuestions: async (_moduleId: number) => {
     set({ isLoading: true, error: null });
     try {
       // CONTOH NYATA PENGGUNAAN API:
@@ -65,7 +65,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     }
   },
 
-  submitAnswer: async (questionId: number, isCorrect: boolean) => {
+  submitAnswer: async (_questionId: number, isCorrect: boolean) => {
     try {
       // PENGGUNAAN API: Mengirim laporan bahwa user berhasil/gagal menjawab
       // await api.post('/student/submit-answer', { question_id: questionId, is_correct: isCorrect });

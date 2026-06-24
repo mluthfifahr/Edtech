@@ -57,8 +57,8 @@ export default function Result() {
       )}
 
       <motion.div 
-        initial={{ scale: 0, rotation: -180 }}
-        animate={{ scale: 1, rotation: 0 }}
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
         transition={{ type: "spring", stiffness: 200, damping: 15 }}
         className="w-48 h-48 bg-yellow-100 rounded-full flex items-center justify-center border-8 border-yellow-300 shadow-2xl"
       >
